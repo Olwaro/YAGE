@@ -4,6 +4,7 @@
 #include "AssetManager.h"
 #include "Drawing.h"
 #include "String.h"
+#include "Debug.h"
 
 SandBox::SandBox()
 {
@@ -28,18 +29,22 @@ void SandBox::update()
 		int v = ((float)(VMAX - VMIN) / 2000) * (ms - since) + VMIN;
 		if (v > VMAX) v = VMAX;
 		rect.y += v;
+		aspr->move_by(0, v);
 	}
 	if (hdl->is_key_pressed(SDLK_UP, since))
 	{
 		rect.y -= 4;
+		aspr->move_by(0, -4);
 	}
 	if (hdl->is_key_pressed(SDLK_RIGHT, since))
 	{
 		rect.x += 4;
+		aspr->move_by(4, 0);
 	}
 	if (hdl->is_key_pressed(SDLK_LEFT, since))
 	{
 		rect.x -= 4;
+		aspr->move_by(-4, 0);
 	}
 
 	while (delayed_actions->size() > 0)
@@ -47,14 +52,18 @@ void SandBox::update()
 		(*(delayed_actions->front()))();
 		delayed_actions->pop_front();
 	}
+
+	aspr->update(ms);
 }
 
 void SandBox::render()
 {
-	SDL_SetRenderDrawColor(Game::get_instance()->renderer, 255, 0, 0, 0);
-	SDL_RenderFillRect(Game::get_instance()->renderer, &rect);
+	auto rndr = Game::get_instance()->renderer;
+	SDL_SetRenderDrawColor(rndr, 255, 0, 0, 0);
+	//SDL_RenderFillRect(Game::get_instance()->renderer, &rect);
 
-	Drawing::draw_full_texture(Game::get_instance()->renderer, Game::get_instance()->assets->get_texture("SDL"), 100, 100);
+	//Drawing::draw_full_texture(rndr, Game::get_instance()->assets->get_texture("SDL"), 100, 100);
+	aspr->draw(rndr);
 }
 
 bool SandBox::on_enter()
@@ -71,7 +80,14 @@ bool SandBox::on_enter()
 	}));
 
 	Game::get_instance()->inputs->register_observer(this, INPUT_KEYBOARD);
+	Game::get_instance()->inputs->register_observer(this, INPUT_MOUSE);
+
 	Game::get_instance()->assets->load_texture("SDL_logo.png", "SDL");
+	Game::get_instance()->assets->load_texture("ani.png", "ani");
+	Game::get_instance()->assets->load_animation("animation_tim.xml", "tim");
+
+	aspr = new AnimatedSprite(0, 0, 61, 70);
+	aspr->set_animation(Game::get_instance()->assets->get_animation("tim"));
 
 	return true;
 }
@@ -100,5 +116,11 @@ void SandBox::on_notify(SDL_Event* ev)
 				delayed_actions->push_back(str.get_callback());
 			}
 		}
+	}
+
+	if (ev->type == SDL_MOUSEWHEEL)
+	{
+		aspr->set_frame_time(aspr->get_frame_time() + ev->wheel.y);
+		Debug::warning(std::to_string(aspr->get_frame_time()));
 	}
 }

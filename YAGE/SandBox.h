@@ -4,6 +4,8 @@
 #include "InputObserverInterface.h"
 #include "KeyString.h"
 #include "ActionQueue.h"
+#include "Animation.h"
+#include "AnimatedSprite.h"
 
 class SandBox : public GameState, public InputObserverInterface
 {
@@ -11,6 +13,10 @@ class SandBox : public GameState, public InputObserverInterface
 	std::string id;
 	std::vector<KeyString> key_strings;
 	ActionQueue* delayed_actions;
+
+	Animation* anim;
+	AnimatedSprite* aspr;
+	std::vector<AnimatedSprite> test;
 
 public:
 	SandBox();

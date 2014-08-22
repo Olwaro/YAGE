@@ -31,6 +31,9 @@ public:
 	void force_key(int key, bool state, int ms);
 	bool is_key_pressed(int key, int& ms);
 
+	// Mouse handling
+	void handle_mouse(SDL_Event* event, int ms);
+
 	// Observer pattern
 	void register_observer(InputObserverInterface* obs, Input what);
 	void notify(SDL_Event* ev,Input what);

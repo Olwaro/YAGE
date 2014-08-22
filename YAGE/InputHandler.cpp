@@ -49,6 +49,11 @@ bool InputHandler::is_key_pressed(int key, int& ms)
 	}
 }
 
+void InputHandler::handle_mouse(SDL_Event* event, int ms)
+{
+	notify(event, INPUT_MOUSE);
+}
+
 void InputHandler::register_observer(InputObserverInterface* obs, Input what)
 {
 	switch (what)

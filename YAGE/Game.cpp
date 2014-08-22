@@ -106,6 +106,10 @@ void Game::handle_events(SDL_Event* event)
 	{
 		inputs->update_keys(event, SDL_GetTicks());
 	}
+	else if (event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP || event->type == SDL_MOUSEMOTION|| event->type == SDL_MOUSEWHEEL)
+	{
+		inputs->handle_mouse(event, SDL_GetTicks());
+	}
 }
 
 void Game::update()
